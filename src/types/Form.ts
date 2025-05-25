@@ -19,7 +19,8 @@ export interface FormField {
   label: string;
   type: FieldType;
   required: boolean;
-  category: string;
+  value?: string | number | boolean;
+  category?: string;
   description?: string;
   placeholder?: string;
   defaultValue?: string | number | boolean;
