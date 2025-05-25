@@ -16,6 +16,7 @@ export interface FormContextType {
   // Form actions
   fetchForms: () => Promise<void>;
   addForms: (forms: Omit<Form, 'id' | 'created_at' | 'updated_at'>[]) => Promise<Form[]>;
+  createForm: (form: Omit<Form, 'id' | 'created_at' | 'updated_at'>) => Promise<Form>;
   updateForm: (id: string, updates: Partial<Form>) => Promise<Form>;
   deleteForm: (id: string) => Promise<void>;
   toggleFavorite: (id: string, isFavorite: boolean) => Promise<void>;

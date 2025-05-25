@@ -4,17 +4,32 @@ import { Send, Image, Paperclip, SmilePlus, Trash2, Edit } from 'lucide-react';
 import { useMessages } from '../context/MessageContext';
 import { supabase } from '../lib/supabase';
 
+interface Message {
+  id: string;
+  content: string;
+  sender: string;
+  timestamp: string;
+  user_id: string;
+  avatar?: string;
+  isTemp?: boolean;
+}
+
 const Messages: React.FC = () => {
-  const { messages, sendMessage, deleteMessage } = useMessages();
+  const { messages, sendMessage, deleteMessage, setMessages } = useMessages();
   const [newMessage, setNewMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<{id: string; email?: string}|null>(null);
   
   useEffect(() => {
     const fetchUser = async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
+      if (user) {
+        setUser({
+          id: user.id,
+          email: user.email
+        });
+      }
     };
     fetchUser();
   }, []);
@@ -34,8 +49,28 @@ const Messages: React.FC = () => {
     
     try {
       setIsLoading(true);
-      await sendMessage(newMessage);
+      
+      // Add temporary local message immediately
+      const tempMessage: Message = {
+        id: `temp-${Date.now()}`,
+        content: newMessage,
+        sender: user?.email || 'You',
+        timestamp: new Date().toISOString(),
+        user_id: user?.id || ''
+      };
+      
+      setMessages((prev: Message[]) => [...prev, tempMessage]);
       setNewMessage('');
+      
+      // Scroll to bottom to show new message
+      setTimeout(scrollToBottom, 100);
+      
+      // Send to Supabase
+      await sendMessage(newMessage);
+      
+      // Remove temp message and replace with confirmed one
+      setMessages((prev: Message[]) => prev.filter(m => m.id !== tempMessage.id));
+      
     } catch (error) {
       console.error('Error sending message:', error);
     } finally {
@@ -62,7 +97,7 @@ const Messages: React.FC = () => {
         </div>
         
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
-          {messages.map((message) => (
+          {messages.map((message: Message) => (
             <div
               key={message.id}
               className={`flex items-start gap-3 ${

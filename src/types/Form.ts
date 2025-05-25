@@ -33,7 +33,7 @@ export interface FormField {
     max?: number | string;
     step?: number | string;
   };
-  metadata?: Record<string, any>;
+  metadata?: Record<string, string | number | boolean | null | undefined>;
   position?: {
     page?: number;
     x?: number;
@@ -52,7 +52,13 @@ export interface DocumentMetadata {
   modified?: string;
   pageCount?: number;
   fieldsCount?: number;
-  [key: string]: any;
+}
+
+export interface ExtractedField {
+  name: string;
+  type: FieldType;
+  required: boolean;
+  description?: string;
 }
 
 export interface Form {

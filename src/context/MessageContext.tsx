@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { supabase } from '../lib/supabase';
+import { v4 as uuidv4 } from 'uuid';
 
 interface Message {
   id: string;
@@ -14,6 +15,7 @@ interface MessageContextType {
   messages: Message[];
   sendMessage: (content: string) => Promise<void>;
   deleteMessage: (id: string) => Promise<void>;
+  setMessages: React.Dispatch<React.SetStateAction<Message[]>>;
 }
 
 const MessageContext = createContext<MessageContextType | undefined>(undefined);
@@ -30,10 +32,17 @@ export const MessageProvider: React.FC<{ children: ReactNode }> = ({ children })
         schema: 'public',
         table: 'messages'
       }, payload => {
-        const newMessage = payload.new as Message;
-        setMessages(prev => [...prev, newMessage]);
+        try {
+          const newMessage = payload.new as Message;
+          setMessages(prev => [...prev, newMessage]);
+        } catch (error) {
+          console.error('Error processing new message:', error);
+        }
       })
-      .subscribe();
+      .subscribe((status, err) => {
+        if (err) console.error('Subscription error:', err);
+        console.log('Subscription status:', status);
+      });
 
     // Fetch existing messages
     const fetchMessages = async () => {
@@ -58,16 +67,27 @@ export const MessageProvider: React.FC<{ children: ReactNode }> = ({ children })
   }, []);
 
   const sendMessage = async (content: string) => {
-    const user = supabase.auth.getUser();
-    if (!user) {
-      throw new Error('User not authenticated');
-    }
-
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('User not authenticated');
+    
+    const newMessage = {
+      id: uuidv4(),
+      content,
+      sender: user.email || 'Anonymous',
+      timestamp: new Date().toISOString(),
+      user_id: user.id
+    };
+    
+    // Optimistic update
+    setMessages(prev => [...prev, newMessage]);
+    
     const { error } = await supabase
       .from('messages')
-      .insert([{ content, user_id: (await user).data.user?.id }]);
-
+      .insert(newMessage);
+    
     if (error) {
+      // Rollback optimistic update if Supabase fails
+      setMessages(prev => prev.filter(m => m.id !== newMessage.id));
       throw error;
     }
   };
@@ -86,7 +106,7 @@ export const MessageProvider: React.FC<{ children: ReactNode }> = ({ children })
   };
 
   return (
-    <MessageContext.Provider value={{ messages, sendMessage, deleteMessage }}>
+    <MessageContext.Provider value={{ messages, sendMessage, deleteMessage, setMessages }}>
       {children}
     </MessageContext.Provider>
   );

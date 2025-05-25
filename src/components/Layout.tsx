@@ -31,6 +31,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     setSidebarOpen(!sidebarOpen);
   };
 
+  const handleNewForm = () => {
+    // Open modal or navigate to form creation
+    navigate('/forms/new');
+  };
+
   return (
     <div className="flex h-screen bg-gray-50">
       {/* Mobile sidebar toggle */}
@@ -56,8 +61,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           </div>
           <div className="mt-8 space-y-1">
             <button 
+              onClick={handleNewForm}
               className="w-full flex items-center justify-between p-3 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
-              onClick={() => navigate('/form/new')}
             >
               <span className="flex items-center gap-2">
                 <Plus size={18} />
