@@ -5,6 +5,16 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   base: process.env.NODE_ENV === 'production' ? '/Form-Flow/' : '/',
   plugins: [react()],
+  build: {
+    outDir: 'docs',
+    emptyOutDir: true,
+    assetsDir: './',
+    rollupOptions: {
+      output: {
+        assetFileNames: '[name].[ext]'
+      }
+    }
+  },
   optimizeDeps: {
     exclude: ['lucide-react'],
   },
