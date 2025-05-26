@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: process.env.NODE_ENV === 'production' ? '/Form-Flow/' : '/',
+  base: process.env.NODE_ENV === 'production' ? '/TCPA-Procurement/' : '/',
   plugins: [react()],
   publicDir: 'public',
   build: {

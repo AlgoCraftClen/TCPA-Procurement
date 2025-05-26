@@ -2,7 +2,7 @@
   "name": "formflow-document-manager",
   "private": true,
   "version": "1.0.0",
-  "homepage": "https://cm-procurement.github.io/Form-Flow",
+  "homepage": "https://algocraftclen.github.io/TCPA-Procurement",
   "type": "module",
   "scripts": {
     "dev": "vite",
