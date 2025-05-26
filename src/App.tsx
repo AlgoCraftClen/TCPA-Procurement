@@ -12,7 +12,7 @@ import { MessageProvider } from './context/MessageContext';
 
 function App() {
   return (
-    <Router>
+    <Router basename="/Form-Flow">
       <FormProvider>
         <MessageProvider>
           <Layout>
