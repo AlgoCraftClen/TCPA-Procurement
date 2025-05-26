@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { useEffect } from 'react';
 import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
 import FormsLibrary from './pages/FormsLibrary';
@@ -11,8 +12,12 @@ import { FormProvider } from './context/FormContext';
 import { MessageProvider } from './context/MessageContext';
 
 function App() {
+  // Log environment variables for debugging
+  useEffect(() => {
+    console.log('Base URL:', import.meta.env.BASE_URL);
+  }, []);
   return (
-    <Router basename="/TCPA-Procurement">
+    <Router basename={import.meta.env.BASE_URL}>
       <FormProvider>
         <MessageProvider>
           <Layout>

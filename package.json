@@ -5,7 +5,7 @@
   "homepage": "https://algocraftclen.github.io/TCPA-Procurement",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --base=/",
     "build": "cross-env NODE_ENV=production vite build",
     "lint": "eslint .",
     "preview": "vite preview"
