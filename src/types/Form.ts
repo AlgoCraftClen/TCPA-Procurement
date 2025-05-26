@@ -58,7 +58,9 @@ export interface ExtractedField {
   name: string;
   type: FieldType;
   required: boolean;
-  description?: string;
+  defaultValue?: string;
+  options?: string[];
+  section?: string;
 }
 
 export interface Form {
