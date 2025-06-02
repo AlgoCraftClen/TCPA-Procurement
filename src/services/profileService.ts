@@ -58,7 +58,7 @@ export const profileService = {
     fields: Array<Omit<ProfileField, 'profile_id'> & { id?: string }>
   ): Promise<AutofillProfile> {
     // Update profile
-    const { data: profileData, error: profileError } = await supabase
+    const { error: profileError } = await supabase
       .from('profiles')
       .update({
         ...updates,

@@ -1,4 +1,7 @@
-import { PDFDocument, PDFDropdown, PDFField } from 'pdf-lib';
+import { PDFDocument } from 'pdf-lib';
+// We need to keep PDFDropdown as a value import for instanceof checks
+import { PDFDropdown } from 'pdf-lib';
+import type { PDFField } from 'pdf-lib';
 import * as mammoth from 'mammoth';
 import * as XLSX from 'xlsx';
 import { ExtractedField, FieldType } from '../types/Form';
@@ -12,7 +15,7 @@ async function extractPDFFields(file: File): Promise<ExtractedField[]> {
   const pdfDoc = await PDFDocument.load(arrayBuffer);
   const form = pdfDoc.getForm();
   
-  return form.getFields().map(field => {
+  return form.getFields().map((field: PDFField) => {
     const type = field.constructor.name
       .replace('PDF', '')
       .replace('Field', '')
@@ -26,8 +29,8 @@ async function extractPDFFields(file: File): Promise<ExtractedField[]> {
       type,
       required: !field.isReadOnly(),
       defaultValue,
-      options: type === 'select' && field instanceof PDFDropdown
-        ? field.getOptions()
+      options: type === 'select' && field.constructor.name === 'PDFDropdown'
+        ? (field as unknown as PDFDropdown).getOptions()
         : undefined,
       section: field.getName().split('.').slice(0, -1).join(' > ') || 'Main'
     };
